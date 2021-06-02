@@ -28,10 +28,12 @@ then
   shift
 fi
 
+SIBLINGS='false'
 BUILD_VOLUME="${PROJECT}"
 if [[ ".$1" = '.--build-uses-siblings' ]]
 then
   BUILD_VOLUME="$(dirname "${PROJECT}")"
+  SIBLINGS='true'
   shift
 fi
 
@@ -115,10 +117,18 @@ function waitForDockerComposeReady() {
             info "Build executables for the back-end"
             DOCKER_FLAGS=()
             ## DOCKER_FLAGS=(-e 'RUSTFLAGS=-Z macro-backtrace')
-            time docker run --rm -v "cargo-home:/var/cargo-home" -e "CARGO_HOME=/var/cargo-home" \
-                "${DOCKER_FLAGS[@]}" \
-                -v "${BUILD_VOLUME}:${BUILD_VOLUME}" -w "${PROJECT}" "${DOCKER_REPOSITORY}/rust" \
-                cargo build --target-dir 'target/linux'
+            if "${SIBLINGS}"
+            then
+              time docker run --rm -v "cargo-home:/var/cargo-home" -e "CARGO_HOME=/var/cargo-home" \
+                  "${DOCKER_FLAGS[@]}" \
+                  -v "${BUILD_VOLUME}:${BUILD_VOLUME}" -w "${PROJECT}" "${DOCKER_REPOSITORY}/rust" \
+                  cargo build --target-dir 'target/linux'
+              time docker build -t "${DOCKER_REPOSITORY}/${ENSEMBLE_NAME}-core:${ENSEMBLE_IMAGE_VERSION}" \
+                          -f docker/app/Dockerfile-siblings target/linux
+            else
+              time docker build -t "${DOCKER_REPOSITORY}/${ENSEMBLE_NAME}-core:${ENSEMBLE_IMAGE_VERSION}" \
+                          -f docker/app/Dockerfile .
+            fi
         fi
 
         if "${DO_BUILD_PRESENT}"

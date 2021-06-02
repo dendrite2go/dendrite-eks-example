@@ -11,6 +11,11 @@ ELASTIC_SEARCH_VERSION='7.6.1'
 ROOT_PRIVATE_KEY='data/secure/id_rsa'
 ADDITIONAL_TRUSTED_KEYS=()
 NIX_STORE_VOLUME="${USER}-nix-store"
+AWS_ACCOUNT_ID='<aws-account-id>'
+AWS_REGION='eu-west-1'
+RUST_TAG='1.52.1'
+NODE_TAG='14.17.0-alpine'
+NGINX_TAG='1.15-alpine'
 
 EXTRA_VOLUMES="# Extra volumes
       -

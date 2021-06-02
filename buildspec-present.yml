@@ -1,0 +1,43 @@
+version: 0.2
+
+env:
+  variables:
+    AWS_ACCOUNT_ID: <aws-account-id>
+    AWS_DEFAULT_REGION: eu-west-1
+    IMAGE_REPO_PREFIX: rustic/
+    IMAGE_REPO_BASE: rustic/app
+    IMAGE_TAG: 0.1.0-SNAPSHOT
+    NODE_TAG: 14.17.0-alpine
+    PROTOC_TAG: latest
+
+phases:
+  pre_build:
+    commands:
+      - echo Logging in to Amazon ECR...
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+  build:
+    commands:
+      - echo Build started on $(date)
+      - docker pull $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/${IMAGE_REPO_PREFIX}dendrite2go/build-protoc:$PROTOC_TAG
+      - docker tag $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/${IMAGE_REPO_PREFIX}dendrite2go/build-protoc:$PROTOC_TAG ${IMAGE_REPO_PREFIX}dendrite2go/build-protoc:$PROTOC_TAG
+      - docker pull $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/${IMAGE_REPO_PREFIX}node:$NODE_TAG
+      - docker tag $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/${IMAGE_REPO_PREFIX}node:$NODE_TAG ${IMAGE_REPO_PREFIX}node:$NODE_TAG
+      - docker pull $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_BASE-present-compiled:previous || docker tag ${IMAGE_REPO_PREFIX}node:$NODE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_BASE-present-compiled:previous
+      - docker tag $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_BASE-present-compiled:previous $IMAGE_REPO_BASE-present-compiled:previous
+      - docker rmi $IMAGE_REPO_BASE-present-compiled:next || true
+      - cp etc/settings-sample+build.sh etc/settings-local.sh
+      - bin/create-local-settings.sh
+      - echo Generating gRPC bindings for React app
+      - docker run -v $(pwd):/usr/src/application -w /usr/src/application/present/bin ${IMAGE_REPO_PREFIX}dendrite2go/build-protoc:$PROTOC_TAG ./generate-proto-js-package.sh
+      - echo Building the Docker image...
+      - docker build --tag $IMAGE_REPO_BASE-present-compiled:next -f docker/present/Dockerfile-compile .
+      - docker build --tag $IMAGE_REPO_BASE-present:$IMAGE_TAG -f docker/present/Dockerfile-distribution docker/present
+      - docker rmi $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_BASE-present-compiled:previous
+      - docker tag $IMAGE_REPO_BASE-present-compiled:next $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_BASE-present-compiled:previous
+      - docker tag $IMAGE_REPO_BASE-present:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_BASE-present:$IMAGE_TAG
+  post_build:
+    commands:
+      - echo Build completed on $(date)
+      - echo Pushing the Docker images...
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_BASE-present-compiled:previous
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_BASE-present:$IMAGE_TAG

@@ -1,7 +1,9 @@
 *-local.*
+/docker/context/home/*/[^R]*
 /data/local/
 /docker/docker-compose.yml
 /src/example_event/trusted_generated.rs
+/src/dendrite_config.rs
 proto_*.rs
 
 /present/src/grpc/
