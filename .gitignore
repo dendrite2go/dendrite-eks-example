@@ -1,0 +1,14 @@
+*-local.*
+/data/local/
+/docker/docker-compose.yml
+/src/example_event/trusted_generated.rs
+proto_*.rs
+
+/present/src/grpc/
+/present/node_modules/
+/present/build/
+
+/target/
+**/*.rs.bk
+
+/.idea/
