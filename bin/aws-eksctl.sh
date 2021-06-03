@@ -6,6 +6,8 @@ BIN="$(cd "$(dirname "$0")" ; pwd)"
 PROJECT="$(dirname "${BIN}")"
 CONTEXT_HOME="${PROJECT}/docker/context/home"
 
+source "${BIN}/verbose.sh"
+
 TTY_FLAG=()
 if [[ ".$1" = '.-t' ]]
 then
@@ -17,5 +19,5 @@ docker run --rm "${TTY_FLAG[@]}" -i \
   -v "${CONTEXT_HOME}/kube:/root/.kube" \
   -v "${CONTEXT_HOME}/aws:/root/.aws" \
   -v "${PROJECT}:${PROJECT}" \
-  -w "${CWD}" \
+  -w "$(pwd)" \
   weaveworks/eksctl:0.50.0 "$@"
