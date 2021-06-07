@@ -16,6 +16,8 @@ Setup bash environment:
 $ source bin/project-set-env.sh
 ```
 
+First, build the project locally: `bin/clobber-build-and-run.sh`
+
 Tool [eksctl](https://docs.aws.amazon.com/eks/latest/userguide/getting-started-eksctl.html).
 
 Create the `rustic` cluster with:
@@ -72,7 +74,7 @@ kubectl get pods --namespace=rustic-test -l app=elasticsearch-master -w
 ```
 
 Add permissions to create and attach EBS volumes to instances in the node group:
-1. In the AWS console go to EKS > clusters > rustic > Configuration > Compute > <_the node group_> > Node IAM Role ARN
+1. In the AWS console go to EKS > clusters > rustic > Configuration > Compute > <_the-node-group_> > Node IAM Role ARN
 2. Click Attach policies
 3. Search for AmazonEKS_CNI_Policy select it and click Attack policy
 4. Click Add inline policy
@@ -80,6 +82,31 @@ Add permissions to create and attach EBS volumes to instances in the node group:
 6. Paste the contents of "etc/aws-create-volume-policy.json" and replace ${AWS_ACCOUNT_ID} by your AWS account ID
 7. Click Review policy
 8. Enter the name "EC2CreateVolume" and Click Create policy
+
+(Maybe it is necessary to recreate all nodes for the policy to take effect, but I'm not sure.)
+
+Install the [ebs-csi driver](https://docs.aws.amazon.com/eks/latest/userguide/ebs-csi.html) using script `bin/aws-eks-install-ebs-csi-driver.sh`. I needed to attach role AmazonEKS_EBS_CSI_Driver_Policy to the node group after running the script.
+
+In AWS Elastic Container Registry (ECR) create the following repositories:
+
+* rustic/axoniq/axonserver
+* rustic/dendrite2go/build-protoc
+* rustic/dendrite2go/config-manager
+* rustic/elasticsearch
+* rustic/gcr.io/distroless/cc-debian10
+* rustic/nginx
+* rustic/node
+* rustic/rust
+* rustic/rustic-proxy
+
+Then run the script `bin/aws-transfer-docker-images.sh`.
+
+```shell
+cd helm/charts
+helm install axonserver ./axonserver
+# This takes a while the first time, because the EBS volume must be created
+cd ../..
+```
 
 Create pod with Nginx:
 ```shell
