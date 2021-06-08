@@ -71,12 +71,13 @@ helm repo add elasticsearch https://helm.elastic.co/
 helm repo update
 helm install elasticsearch --version 7.12.1 elasticsearch/elasticsearch
 kubectl get pods --namespace=rustic-test -l app=elasticsearch-master -w
+bin/aws-kubectl-elasticsearch-svc-apply.sh -v
 ```
 
 Add permissions to create and attach EBS volumes to instances in the node group:
 1. In the AWS console go to EKS > clusters > rustic > Configuration > Compute > <_the-node-group_> > Node IAM Role ARN
 2. Click Attach policies
-3. Search for AmazonEKS_CNI_Policy select it and click Attack policy
+3. Search for AmazonEKS_CNI_Policy select it and click Attach policy
 4. Click Add inline policy
 5. Goto tge JSON tab
 6. Paste the contents of "etc/aws-create-volume-policy.json" and replace ${AWS_ACCOUNT_ID} by your AWS account ID
@@ -105,6 +106,10 @@ Then run the script `bin/aws-transfer-docker-images.sh`.
 cd helm/charts
 helm install axonserver ./axonserver
 # This takes a while the first time, because the EBS volume must be created
+
+helm install present ./present
+helm install proxy ./proxy
+helm install monolith ./monolith
 cd ../..
 ```
 

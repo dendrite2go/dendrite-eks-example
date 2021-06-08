@@ -46,5 +46,7 @@ transfer gcr.io/distroless/cc-debian10 "nonroot"
 transfer dendrite2go/build-protoc latest
 transfer axoniq/axonserver "${AXON_VERSION}"
 transfer dendrite2go/config-manager "${CONFIG_MANAGER_VERSION}"
-tag-and-push --prefix "dendrite2go/" "${ENSEMBLE_HYPHENS}-proxy" "${ENSEMBLE_IMAGE_VERSION}"
 transfer elasticsearch "${ELASTIC_SEARCH_VERSION}"
+tag-and-push --prefix "dendrite2go/" "${ENSEMBLE_HYPHENS}-proxy" "${ENSEMBLE_IMAGE_VERSION}"
+tag-and-push --prefix "dendrite2go/" "${ENSEMBLE_HYPHENS}-present" "${ENSEMBLE_IMAGE_VERSION}"
+tag-and-push --prefix "dendrite2go/" "${ENSEMBLE_HYPHENS}-api" "${ENSEMBLE_IMAGE_VERSION}"

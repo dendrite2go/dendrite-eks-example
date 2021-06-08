@@ -5,10 +5,10 @@
 replicaCount: 1
 
 image:
-  repository: 240254240210.dkr.ecr.eu-west-1.amazonaws.com/rustic/rustic-core
+  repository: 240254240210.dkr.ecr.eu-west-1.amazonaws.com/rustic/rustic-api
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "0.1.0-SNAPSHOT"
+  tag: "0.0.1-SNAPSHOT"
 
 imagePullSecrets: []
 nameOverride: ""
