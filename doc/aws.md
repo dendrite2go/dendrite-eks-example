@@ -99,6 +99,8 @@ In AWS Elastic Container Registry (ECR) create the following repositories:
 * rustic/node
 * rustic/rust
 * rustic/rustic-proxy
+* rustic/rustic-present
+* rustic/rustic-api
 
 Then run the script `bin/aws-transfer-docker-images.sh`.
 
@@ -112,6 +114,14 @@ helm install proxy ./proxy
 helm install monolith ./monolith
 cd ../..
 ```
+
+Forward port 3000 at localhost to a proxy daemon in EKS:
+
+```shell
+aws-kubectl-port-forward.sh 3000 8080 $(aws-kubectl-get-pod-name.sh proxy)
+```
+
+## Test with plain vanilla Nginx
 
 Create pod with Nginx:
 ```shell
