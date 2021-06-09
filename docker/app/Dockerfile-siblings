@@ -1,0 +1,5 @@
+FROM gcr.io/distroless/cc-debian10
+
+COPY debug/dendrite_example /usr/local/bin/dendrite_example
+
+CMD ["dendrite_example"]

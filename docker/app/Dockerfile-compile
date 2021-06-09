@@ -1,0 +1,30 @@
+FROM woc/rustic-core-compiled:previous as build
+
+# Support incremental builds in AWS codebuild
+
+# docker pull woc/rustic-core-compiled:previous \
+#   || ( docker pull rust:1.52.1 && docker tag rust:1.52.1 woc/rustic-core-compiled:previous )
+# docker rmi woc/rustic-core-compiled:next || true
+# cd "${PROJECT}"
+# docker build --tag woc/rustic-core-compiled:next -f docker/app/Dockerfile-compile . \
+#   && docker tag woc/rustic-core-compiled:next woc/rustic-core-compiled:previous
+# docker build --tag woc/rustic-core:0.1.0-SNAPSHOT -f docker/app/Dockerfile-distribution docker/app
+
+WORKDIR /usr/src/example
+COPY proto/ proto/
+COPY src/ src/
+COPY *.rs ./
+COPY Cargo.* ./
+RUN bash -c 'touch src/proto_{dendrite_config,example}.rs
+
+FROM woc/rust:1.52.1
+
+RUN rustup component add rustfmt
+
+WORKDIR /usr/src/example
+
+COPY --from=build /usr/src/example/ /usr/src/example/
+
+RUN cargo install --path .
+
+CMD ["dendrite_example"]

@@ -26,10 +26,7 @@ services:
       source: axon-eventdata
       target: /eventdata
   ${ENSEMBLE_NAME}-command-api:
-    image: rust:latest
-    working_dir: ${PROJECT}/target
-    command:
-      - "linux/debug/dendrite_example"
+    image: ${DOCKER_REPOSITORY}/${ENSEMBLE_NAME}-core:${ENSEMBLE_IMAGE_VERSION}
     environment:
       - "RUST_LOG=info,dendrite=debug"
       - "RUST_BACKTRACE=1"
@@ -78,7 +75,7 @@ services:
     networks:
       - ${ENSEMBLE_NAME}
     ports:
-      - target: 80
+      - target: 8080
         published: ${UI_SERVER_PORT}
       - target: 8118
         published: 8118

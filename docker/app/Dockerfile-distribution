@@ -1,0 +1,9 @@
+FROM woc/rustic-core-compiled:next as build
+
+# For usage see Dockerfile-compile
+
+FROM woc/gcr.io/distroless/cc-debian10:nonroot
+
+COPY --from=build /usr/local/cargo/bin/dendrite_example /usr/local/bin/dendrite_example
+
+CMD ["dendrite_example"]
