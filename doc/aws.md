@@ -22,7 +22,7 @@ Tool [eksctl](https://docs.aws.amazon.com/eks/latest/userguide/getting-started-e
 
 Create the `rustic` cluster with:
 ```shell
-aws-ekctl-create-cluster.sh
+aws-eksctl-create-cluster.sh
 ```
 
 To delete it (_e.g._, because it didn't finish correctly)
@@ -98,9 +98,9 @@ In AWS Elastic Container Registry (ECR) create the following repositories:
 * rustic/nginx
 * rustic/node
 * rustic/rust
+* rustic/rustic-api
 * rustic/rustic-proxy
 * rustic/rustic-present
-* rustic/rustic-api
 
 Then run the script `bin/aws-transfer-docker-images.sh`.
 

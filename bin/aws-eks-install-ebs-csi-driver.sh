@@ -20,7 +20,7 @@ mkdir -p "${PROJECT}/data/local"
     ( "${BIN}/aws.sh" iam list-entities-for-policy --policy-arn "${POLICY_ARN}" --query='PolicyRoles[0].RoleName' || true) | tr -d \"
   }
   ATTACHED_ROLE="$(get-attached-role "arn:aws:iam::${AWS_ACCOUNT_ID}:policy/AmazonEKS_EBS_CSI_Driver_Policy")"
-  if [[ -n "${ATTACHED_ROLE}" ]]
+  if [[ ".${ATTACHED_ROLE}" != '.null' ]]
   then
     "${BIN}/aws.sh" iam detach-role-policy --role-name "${ATTACHED_ROLE}" --policy-arn "arn:aws:iam::${AWS_ACCOUNT_ID}:policy/AmazonEKS_EBS_CSI_Driver_Policy"
   fi

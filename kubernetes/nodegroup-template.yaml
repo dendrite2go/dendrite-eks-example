@@ -1,0 +1,18 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: work-on-capital
+  region: eu-west-1
+
+managedNodeGroups:
+  - name: woc-ng
+    labels: { role: workers }
+    instanceType: t3.medium
+    minSize: 3
+    desiredCapacity: 3
+    maxSize: 3
+    volumeSize: 80
+    privateNetworking: true
+    ssh:
+      publicKey: "${PUBLIC_KEY}"

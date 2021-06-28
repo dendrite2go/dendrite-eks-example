@@ -13,7 +13,7 @@ source "${PROJECT}/etc/settings-local.sh"
 
 PUBLIC_KEY="$(cat "${ROOT_PRIVATE_KEY}.pub")"
 
-instantiate-template "${PROJECT}/kubernetes/cluster" '.yaml'
+instantiate-template "${PROJECT}/kubernetes/nodegroup" '.yaml'
 
 "${BIN}/aws-eksctl.sh" create nodegroup \
   -f "${PROJECT}/kubernetes/nodegroup-local.yaml"
