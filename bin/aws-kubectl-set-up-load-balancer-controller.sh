@@ -76,9 +76,22 @@ mkdir -p "${LOCAL_DATA}"
 
   SERVICE_ROLE="$(get-stack-resource ServiceRole)"
   info "SERVICE_ROLE=[${SERVICE_ROLE}]"
+  if [[ -z "${SERVICE_ROLE}" ]]
+  then
+    error 'Missing service role'
+  fi
 
   VPC="$(get-stack-resource VPC)"
   info "VPC=[${VPC}]"
+  if [[ -z "${VPC}" ]]
+  then
+    error 'Missing Virtual Private Cloud (VPC)'
+  fi
+
+  aws iam attach-role-policy \
+        --role-name "${SERVICE_ROLE}" \
+        --policy-arn arn:aws:iam::${AWS_ACCOUNT_ID}:policy/AWSLoadBalancerControllerIAMPolicy \
+    || true
 
   aws iam attach-role-policy \
         --role-name "${SERVICE_ROLE}" \
