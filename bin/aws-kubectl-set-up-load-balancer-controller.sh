@@ -10,6 +10,8 @@ LOCAL_DATA="${PROJECT}/data/local"
 
 source "${BIN}/lib-verbose.sh"
 
+LOAD_BALANCER_CONTROLLER_VERSION='v2_ga'
+
 "${BIN}/create-local-settings.sh"
 
 source "${PROJECT}/etc/settings-local.sh"
@@ -56,7 +58,7 @@ mkdir -p "${LOCAL_DATA}"
 
   if [[ -z "$(aws iam list-policies | grep ':policy/AWSLoadBalancerControllerIAMPolicy')" ]]
   then
-    curl -s -o 'eks_load_balancer_controller_iam_policy.json' https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.2.0/docs/install/iam_policy.json
+    curl -s -o 'eks_load_balancer_controller_iam_policy.json' "https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/${LOAD_BALANCER_CONTROLLER_VERSION}/docs/install/iam_policy.json"
     aws iam create-policy \
         --policy-name AWSLoadBalancerControllerIAMPolicy \
         --policy-document file://eks_load_balancer_controller_iam_policy.json
@@ -66,7 +68,7 @@ mkdir -p "${LOCAL_DATA}"
 
   if [[ -z "$(aws iam list-policies | grep ':policy/AWSLoadBalancerControllerAdditionalIAMPolicy')" ]]
   then
-    curl -s -o 'iam_policy_v1_to_v2_additional.json' curl -o iam_policy_v1_to_v2_additional.json https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.2.0/docs/install/iam_policy_v1_to_v2_additional.json
+    curl -s -o 'iam_policy_v1_to_v2_additional.json' curl -o iam_policy_v1_to_v2_additional.json "https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/${LOAD_BALANCER_CONTROLLER_VERSION}/docs/install/iam_policy_v1_to_v2_additional.json"
     aws iam create-policy \
         --policy-name AWSLoadBalancerControllerAdditionalIAMPolicy \
         --policy-document file://iam_policy_v1_to_v2_additional.json

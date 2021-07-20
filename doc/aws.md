@@ -79,7 +79,7 @@ Add permissions to create and attach EBS volumes to instances in the node group:
 2. Click Attach policies
 3. Search for AmazonEKS_CNI_Policy select it and click Attach policy
 4. Click Add inline policy
-5. Goto tge JSON tab
+5. Goto the JSON tab
 6. Paste the contents of "etc/aws-create-volume-policy.json" and replace ${AWS_ACCOUNT_ID} by your AWS account ID
 7. Click Review policy
 8. Enter the name "EC2CreateVolume" and Click Create policy
